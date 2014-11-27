@@ -1,6 +1,5 @@
-Download the movies-mpaa.txt file from the Introduction to Programming in Java website from Robert Sedgewick and Kevin
-Wayne of Princeton University (http://introcs.cs.princeton.edu/java/home).
+You can use the following link to download the file with movie data that is used in this project:
+http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt
 
-You can use the following link: http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt
-
-
+This file is part of the "Introduction to Programming in Java" course from Robert Sedgewick and Kevin Wayne of
+Princeton University (http://introcs.cs.princeton.edu/java/home).
