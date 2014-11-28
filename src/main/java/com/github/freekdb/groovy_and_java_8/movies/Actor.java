@@ -1,5 +1,7 @@
 package com.github.freekdb.groovy_and_java_8.movies;
 
+import java.util.Objects;
+
 /**
  * Class representing actors.
  *
@@ -20,5 +22,26 @@ public class Actor {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getFullName() {
+        return firstName + (lastName != null ? " " + lastName : "");
+    }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
+
+    @Override
+    public boolean equals(final Object that) {
+        return that instanceof Actor
+               && Objects.equals(firstName, ((Actor) that).firstName)
+               && Objects.equals(lastName, ((Actor) that).lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName);
     }
 }

@@ -27,15 +27,14 @@ public class MovieQueries {
     /**
      * Compare several queries on a movies list using Java 7 versus Java 8 style.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     private void runQueries() {
-        final List<Movie> movies = readData("data/movies-mpaa.txt");
+        final List<Movie> movies = readMoviesAndActors("data/movies-mpaa.txt");
         System.out.println("movies.size(): " + movies.size());
         System.out.println();
 
         printYearWithMostMovies(movies);
-
-        // Most seen actor? Frank Welker
-
+        printMostActiveActor(movies);
 
         // Most seen actor in one year? Phil Hawn: 24 movies in 1999
     }
@@ -46,14 +45,13 @@ public class MovieQueries {
      * @param filePath the input file path.
      * @return the movies list.
      */
-    private List<Movie> readData(final String filePath) {
+    private List<Movie> readMoviesAndActors(final String filePath) {
         final List<Movie> movies = new ArrayList<>();
         try {
             final BufferedReader dataReader = new BufferedReader(new FileReader(filePath));
             String line;
-            while ((line = dataReader.readLine()) != null) {
+            while ((line = dataReader.readLine()) != null)
                 movies.add(new Movie(line));
-            }
             dataReader.close();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -62,7 +60,7 @@ public class MovieQueries {
     }
 
     /**
-     * Print the year in which the most movies were released (and the movie count), both in Java 7 and Java 8 style.
+     * Print the year in which the most movies were released (and the movie count). Expected answers: 1997 and 700.
      *
      * @param movies the movie list.
      */
@@ -95,5 +93,34 @@ public class MovieQueries {
         System.out.println("maximumMovieYear: " + yearAndCountEntry.getKey());
         System.out.println("yearToMovieCount.get(maximumMovieYear): " + yearAndCountEntry.getValue());
         System.out.println();
+    }
+
+    /**
+     * Print the actor that has worked on the most movies. Expected answer: Frank Welker and 92.
+     *
+     * @param movies the movie list.
+     */
+    @SuppressWarnings("SpellCheckingInspection")
+    private void printMostActiveActor(final List<Movie> movies) {
+        // Java 7 style.
+        final Map<Actor, Long> actorToMovieCount = new HashMap<>();
+        for (final Movie movie : movies)
+            for (final Actor actor : movie.getActors())
+                actorToMovieCount.put(actor, 1 + (actorToMovieCount.containsKey(actor) ? actorToMovieCount.get(actor) : 0));
+        long maximumMovieCount = 0;
+        Actor mostProductiveActor = null;
+        for (final Actor actor : actorToMovieCount.keySet())
+            if (actorToMovieCount.get(actor) > maximumMovieCount) {
+                maximumMovieCount = actorToMovieCount.get(actor);
+                mostProductiveActor = actor;
+            }
+        if (mostProductiveActor != null) {
+            System.out.println("Most productive actor: " + mostProductiveActor.getFullName());
+            System.out.println("Movie count: " + actorToMovieCount.get(mostProductiveActor));
+        } else
+            System.out.println("Most productive actor: not found");
+        System.out.println();
+
+        // Java 8 style.
     }
 }
