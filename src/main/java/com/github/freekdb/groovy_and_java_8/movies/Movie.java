@@ -13,11 +13,11 @@ public class Movie {
     private final int releaseYear;
     private final List<Actor> actors;
 
-    public Movie(final String title, final int releaseYear) {
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.actors = new ArrayList<>();
-    }
+//    public Movie(final String title, final int releaseYear) {
+//        this.title = title;
+//        this.releaseYear = releaseYear;
+//        this.actors = new ArrayList<>();
+//    }
 
     public Movie(final String dataLine) {
         final int startIndexYear = dataLine.indexOf('(') + 1;
@@ -28,19 +28,15 @@ public class Movie {
         this.actors = new ArrayList<>();
         for (final String actorName : dataLine.substring(startIndexActors + 1).split("/")) {
             final int commaIndex = actorName.indexOf(',');
-            if (commaIndex != -1)
-                this.actors.add(new Actor(actorName.substring(commaIndex + 1).trim(),
-                                          actorName.substring(0, commaIndex).trim()));
-            else {
-                this.actors.add(new Actor(actorName, ""));
-                //System.err.println("Movie.Movie: actor name without a comma: " + actorName);
-            }
+            final String firstName = (commaIndex != -1) ? actorName.substring(commaIndex + 1).trim() : actorName;
+            final String lastName = (commaIndex != -1) ? actorName.substring(0, commaIndex).trim() : "";
+            this.actors.add(new Actor(firstName, lastName));
         }
     }
 
-    public String getTitle() {
-        return title;
-    }
+//    public String getTitle() {
+//        return title;
+//    }
 
     public int getReleaseYear() {
         return releaseYear;
@@ -48,5 +44,10 @@ public class Movie {
 
     public List<Actor> getActors() {
         return actors;
+    }
+
+    @Override
+    public String toString() {
+        return title + " (" + releaseYear + ")";
     }
 }

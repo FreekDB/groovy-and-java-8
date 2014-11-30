@@ -26,7 +26,16 @@ import java.util.stream.Collectors;
  * - http://blog.paumard.org/2014/11/12/java-8-and-streams-at-devoxx/
  * - http://blog.paumard.org/2014/11/15/a-week-in-devoxx/
  * - https://github.com/JosePaumard/jdk8-lambda-tour/blob/master/src/org/paumard/jdk8/Movies.java
+ * - https://speakerdeck.com/glaforge/groovy-in-the-light-of-java-8-devoxx-2014
+ * - https://speakerdeck.com/glaforge/groovy-in-2014-and-beyond-devoxx-2014
  * - https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+ * - https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
+ * - https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
+ * - https://docs.oracle.com/javase/tutorial/collections/streams/index.html
+ * - http://www.coreservlets.com/java-8-tutorial/
+ * - https://leanpub.com/whatsnewinjava8/read
+ * - http://blog.takipi.com/compiling-lambda-expressions-scala-vs-java-8/
+ * - https://parleys.com/home
  *
  * @author <a href="mailto:freekdb@gmail.com">Freek de Bruijn</a>
  */
@@ -52,11 +61,11 @@ public class MovieQueries {
         System.out.println("Number of actors: " + actors.size());
         System.out.println();
 
-        if (movies.size() == -1) {
+        if (movies.size() == -1)
             printYearWithMostMovies(movies);
-            printMostActiveActor(movies, actors);
-        }
-        printMostActiveActorInSingleYear(movies, actors);
+        printMostActiveActor(movies);
+        if (movies.size() == -1)
+            printMostActiveActorInSingleYear(movies, actors);
     }
 
     /**
@@ -119,10 +128,9 @@ public class MovieQueries {
      * Print the actor that has worked on the most movies. Expected answer: Frank Welker who worked on 92 movies.
      *
      * @param movies the movies.
-     * @param actors the actors.
      */
     @SuppressWarnings("SpellCheckingInspection")
-    private void printMostActiveActor(final List<Movie> movies, final Set<Actor> actors) {
+    private void printMostActiveActor(final List<Movie> movies) {
         // Java 7 style.
         final Map<Actor, Long> actorToMovieCount = new HashMap<>();
         for (final Movie movie : movies)
@@ -143,32 +151,14 @@ public class MovieQueries {
         System.out.println();
 
         // Java 8 style.
-        // todo: rewrite to improve performance, for example by having the movies as the "outer loop".
-        // Disabled the code below for the moment.
-        if (movies.size() == -1) {
-            System.out.println("MovieQueries.printMostActiveActor - 1");
-            final Map<Actor, Long> actorLongMap = actors.stream().parallel()
-                //final Map<Actor, Long> actorLongMap = actors.parallelStream()
-                .collect(
-                    Collectors.toMap(
-                        Function.identity(),
-                        actor -> movies.stream().filter(movie -> movie.getActors().contains(actor)).count()
-                        //Actor::getFullName
-                    )
-                );
-            System.out.println("actorLongMap: " + actorLongMap);
-
-            System.out.println("MovieQueries.printMostActiveActor - 2");
-            final Map<Actor, Long> actorToCountMap = actors.stream().parallel()
-                .collect(Collectors.toMap(Function.identity(),
-                                          actor -> movies.stream().filter(movie -> movie.getActors().contains(actor)).count()));
-            System.out.println("actorToCountMap: " + actorToCountMap);
-            final Map.Entry<Actor, Long> actorAndCountEntry = actorToCountMap
-                .entrySet().stream().max(Map.Entry.comparingByValue()).get();
-            System.out.println("Most productive actor: " + actorAndCountEntry.getKey().getFullName());
-            System.out.println("Movie count: " + actorAndCountEntry.getValue());
-            System.out.println();
-        }
+        final Map.Entry<Actor, Long> actorAndCountEntry = movies.stream()
+            .flatMap(movie -> movie.getActors().stream())
+            .collect(Collectors.toMap(Function.identity(), actor -> 1L, (count1, count2) -> count1 + count2))
+            .entrySet().stream()
+            .max(Map.Entry.comparingByValue()).get();
+        System.out.println("Most productive actor: " + actorAndCountEntry.getKey().getFullName());
+        System.out.println("Movie count: " + actorAndCountEntry.getValue());
+        System.out.println();
     }
 
     /**

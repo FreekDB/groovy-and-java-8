@@ -16,13 +16,13 @@ public class Actor {
         this.lastName = lastName;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
+//    public String getFirstName() {
+//        return firstName;
+//    }
 
-    public String getLastName() {
-        return lastName;
-    }
+//    public String getLastName() {
+//        return lastName;
+//    }
 
     public String getFullName() {
         return firstName + (lastName != null ? " " + lastName : "");
