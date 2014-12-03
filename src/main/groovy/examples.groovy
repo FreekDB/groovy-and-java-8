@@ -1,13 +1,11 @@
 #!/usr/bin/env groovy
 
 // where is the data located
+def moviesFileURL = 'http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt'
 def moviesFileLocation = '../../../data/movies-mpaa.txt' 
 def moviesFile = new File(moviesFileLocation)
 
-// store data file on local disk (only if you have internet :)
-// def moviesFileURL = 'http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt'
-// moviesFile.delete()
-// moviesFile << new URL(moviesFileURL).text
+if (!moviesFile.exists()) { moviesFile << new URL(moviesFileURL).text } // download file !exists
 
 def movies = []
 def fullYears = true
@@ -29,15 +27,12 @@ moviesFile.eachLine { line ->
 
 // re-usable data(-collections)
 def years 	= movies.collect { it['year'] }.unique().sort()
-def yearMax	= years.max() as int
-def yearMin	= years.min() as int
 
 /*************************************************************/
 println "Number of movie titles found: " + movies.count { it['title'] }
 println "Number of unique movie titles found: " + movies.collect { it['title'] }.unique().size()
-println "Year(s) without movies: " + (((yearMin..yearMax).collect { it as String }) - years).join(', ')
-println "Number of movies by year: "
-years.each { year -> println year + "\t" + movies.count { it['year'] == year } }
+println "Year(s) without movies: " + ((((years.min() as int)..(years.max() as int)).collect { it as String }) - years).join(', ')
+println "Number of movies by year: " + (years.collect { year -> ["${year}":(movies.count { it['year'] == year })] })
 
 /*************************************************************/
 print "The most active actor of all time is "
