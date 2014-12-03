@@ -27,69 +27,33 @@ moviesFile.eachLine { line ->
 	movies << movie
 }
 
-// some handy lists
+// re-usable data(-collections)
 def years 	= movies.collect { it['year'] }.unique().sort()
 def yearMax	= years.max() as int
 def yearMin	= years.min() as int
 
 /*************************************************************/
-
-print "Number of movie titles found: "
-println movies.count { it['title'] }
-
-
-/*************************************************************/
-
-print "Number of unique movie titles found: "
-println movies.collect { it['title'] }.unique().size()
-
-
-/*************************************************************/
-
+println "Number of movie titles found: " + movies.count { it['title'] }
+println "Number of unique movie titles found: " + movies.collect { it['title'] }.unique().size()
+println "Year(s) without movies: " + (((yearMin..yearMax).collect { it as String }) - years).join(', ')
 println "Number of movies by year: "
 years.each { year -> println year + "\t" + movies.count { it['year'] == year } }
 
-
 /*************************************************************/
-
-println "Year(s) without movies: "
-println (((yearMin..yearMax).collect { it as String }) - years)
-
-
-/*************************************************************/
-
 print "The most active actor of all time is "
 actors = [:]
-movies.each { movie ->
-	movie['actors'].each { actor ->
-		(!actors[actor]) ? actors[actor] = 1 : actors[actor]++
-	}
-}
+movies.each { movie -> movie['actors'].each { actor -> (!actors[actor]) ? actors[actor] = 1 : actors[actor]++ } }
 def mostActiveActor = actors.sort { it.value }.collect { it }.pop()
 println mostActiveActor.key + " with " + mostActiveActor.value + " movies."
 
-
 /*************************************************************/
-
 print "Most active actor by year: "
 years.each { year ->
-	println ""
-	print year + "\t"
 	actors = [:] // reset actors
-	movies.findAll { it['year'] == year }.each { movie ->
-		movie['actors'].each { actor ->
-			(!actors[actor]) ? actors[actor] = 1 : actors[actor]++
-		}
-	}
+	movies.findAll { it['year'] == year }.each { movie -> movie['actors'].each { actor -> (!actors[actor]) ? actors[actor] = 1 : actors[actor]++ } }
 	def mostActiveActorByYear = actors.sort { it.value }.collect { it }.pop()
-	print mostActiveActorByYear.key + "\t"
-	print mostActiveActorByYear.value + "\t"
-	
-	def actorsWithSameActivity = ((actors.findAll { it.value == mostActiveActorByYear.value }.collect{ it.key }) - mostActiveActorByYear.key).unique()
-	if (actorsWithSameActivity){
-		print "(like: " + actorsWithSameActivity.join(', ') + ")"
-	}		
+	def actorsWithSameActivity = (actors.findAll { it.value == mostActiveActorByYear.value }.collect{ it.key }).unique().sort()
+	println year + "\t" + mostActiveActorByYear.value + "\t" + ((actorsWithSameActivity) ? actorsWithSameActivity.join(', ') : '')
+	//def actorsWithSameActivity = ((actors.findAll { it.value == mostActiveActorByYear.value }.collect{ it.key }) - mostActiveActorByYear.key).unique().sort()
+	//println year + "\t" + mostActiveActorByYear.key + "\t" + mostActiveActorByYear.value + "\t" + ((actorsWithSameActivity) ? actorsWithSameActivity.join(', ') : '')
 }
-
-/*************************************************************/	
-println ""
