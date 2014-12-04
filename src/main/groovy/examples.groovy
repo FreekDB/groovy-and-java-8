@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+def start = System.currentTimeMillis()
 
 // where is the data located
 def moviesFileURL = 'http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt'
@@ -13,8 +14,8 @@ def movies = moviesFile.readLines().collect {[
 						'actors': it.split('/')[1..-1].collect { it.split(',').reverse().join(" ").trim() }
 					]} 
 
-// re-usable data(-collections)
-def years 	= movies.collect { it['year'] }.unique().sort()
+// re-usable list of unique years
+def years = movies.collect { it['year'] }.unique().sort()
 
 println "Number of movie titles found: " + movies.count { it['title'] }
 println "Number of unique movie titles found: " + movies.collect { it['title'] }.unique().size()
@@ -37,3 +38,5 @@ years.each { year ->
 	//def actorsWithSameActivity = ((actors.findAll { it.value == mostActiveActorByYear.value }.collect{ it.key }) - mostActiveActorByYear.key).unique().sort()
 	//println year + "\t" + mostActiveActorByYear.key + "\t" + mostActiveActorByYear.value + "\t" + ((actorsWithSameActivity) ? actorsWithSameActivity.join(', ') : '')
 }
+
+println "Time to exec: " + ((System.currentTimeMillis() - start)/1000)
