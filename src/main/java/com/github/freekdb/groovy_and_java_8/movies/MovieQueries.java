@@ -53,43 +53,20 @@ public class MovieQueries {
      * Compare several queries on a movies list using Java 7 versus Java 8 style.
      */
     private void runQueries() {
-        final List<Movie> movies = readMoviesAndActors("data/movies-mpaa.txt");
-        //final List<Movie> movies = readMoviesAndActors("data/movies-mpaa-test.txt");
+        final String filePath = "data/movies-mpaa.txt";
+        //final String filePath = "data/movies-mpaa-test.txt";
+        final List<Movie> movies = readMoviesAndActors(filePath);
         final Set<Actor> actors = movies.stream().flatMap(movie -> movie.getActors().stream()).collect(Collectors.toSet());
+        System.out.println("Total number of actors: " + actors.size() + ".");
 
-        System.out.println("Number of movies: " + movies.size());
-        System.out.println("Number of actors: " + actors.size());
-        System.out.println();
-
-        if (movies.size() == -1)
-            printYearWithMostMovies(movies);
+        printYearWithMostMovies(movies);
         printMostActiveActor(movies);
-        if (movies.size() == -1)
-            printMostActiveActorInSingleYear(movies, actors);
+        printMostActiveActorInSingleYear(movies, actors);
     }
 
     /**
-     * Read the movies list from the input file.
-     *
-     * @param filePath the input file path.
-     * @return the movies.
-     */
-    private List<Movie> readMoviesAndActors(final String filePath) {
-        final List<Movie> movies = new ArrayList<>();
-        try {
-            final BufferedReader dataReader = new BufferedReader(new FileReader(filePath));
-            String line;
-            while ((line = dataReader.readLine()) != null)
-                movies.add(new Movie(line));
-            dataReader.close();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        return movies;
-    }
-
-    /**
-     * Print the year in which the most movies were released (and the movie count). Expected answers: 1997 and 700.
+     * Print the year in which the most movies were released (and the movie count). Expected answers: 1997, when 700
+     * movies were released.
      *
      * @param movies the movies.
      */
@@ -109,9 +86,9 @@ public class MovieQueries {
                 maximumMovieYear = year;
             }
         }
-        System.out.println("maximumMovieYear: " + maximumMovieYear);
-        System.out.println("yearToMovieCount.get(maximumMovieYear): " + yearToMovieCount.get(maximumMovieYear));
         System.out.println();
+        System.out.println("Java 7 - maximum movie year: " + maximumMovieYear + ", when " + maximumMovieCount
+                           + " movies were released.");
 
         // Java 8 style.
         final Map.Entry<Integer, Long> yearAndCountEntry = movies.stream()
@@ -119,13 +96,12 @@ public class MovieQueries {
             .entrySet().stream()
             .max(Map.Entry.comparingByValue())
             .get();
-        System.out.println("maximumMovieYear: " + yearAndCountEntry.getKey());
-        System.out.println("yearToMovieCount.get(maximumMovieYear): " + yearAndCountEntry.getValue());
-        System.out.println();
+        System.out.println("Java 8 - maximum movie year: " + yearAndCountEntry.getKey()
+                           + ", when " + yearAndCountEntry.getValue() + " movies were released.");
     }
 
     /**
-     * Print the actor that has worked on the most movies. Expected answer: Frank Welker who worked on 92 movies.
+     * Print the actor that has worked on the most movies. Expected answer: Frank Welker, who worked on 92 movies.
      *
      * @param movies the movies.
      */
@@ -143,12 +119,12 @@ public class MovieQueries {
                 maximumMovieCount = actorToMovieCount.get(actor);
                 mostProductiveActor = actor;
             }
-        if (mostProductiveActor != null) {
-            System.out.println("Most productive actor: " + mostProductiveActor.getFullName());
-            System.out.println("Movie count: " + actorToMovieCount.get(mostProductiveActor));
-        } else
-            System.out.println("Most productive actor: not found");
         System.out.println();
+        if (mostProductiveActor != null)
+            System.out.println("Java 7 - most productive actor: " + mostProductiveActor.getFullName()
+                               + ", who worked on " + actorToMovieCount.get(mostProductiveActor) + " movies.");
+        else
+            System.out.println("Java 7 - most productive actor not found?!?");
 
         // Java 8 style.
         final Map.Entry<Actor, Long> actorAndCountEntry = movies.stream()
@@ -156,13 +132,12 @@ public class MovieQueries {
             .collect(Collectors.toMap(Function.identity(), actor -> 1L, (count1, count2) -> count1 + count2))
             .entrySet().stream()
             .max(Map.Entry.comparingByValue()).get();
-        System.out.println("Most productive actor: " + actorAndCountEntry.getKey().getFullName());
-        System.out.println("Movie count: " + actorAndCountEntry.getValue());
-        System.out.println();
+        System.out.println("Java 8 - most productive actor: " + actorAndCountEntry.getKey().getFullName()
+                           + ", who worked on " + actorAndCountEntry.getValue() + " movies.");
     }
 
     /**
-     * Print the actor that has worked on the most movies in a single year. Expected answer: Phil Hawn who worked on 24
+     * Print the actor that has worked on the most movies in a single year. Expected answer: Phil Hawn, who worked on 24
      * movies in 1999.
      *
      * @param movies the movies.
@@ -191,17 +166,17 @@ public class MovieQueries {
                     mostProductiveYear = year;
                 }
             }
-        if (mostProductiveActor != null) {
-            System.out.println("Most productive actor in a single year: " + mostProductiveActor.getFullName());
-            System.out.println("Year: " + mostProductiveYear);
-            System.out.println("Movie count: " + actorToMoviePerYearCount.get(mostProductiveActor).get(mostProductiveYear));
-        } else
-            System.out.println("Most productive actor: not found");
         System.out.println();
+        if (mostProductiveActor != null)
+            System.out.println("Java 7 - most productive actor in a single year: " + mostProductiveActor.getFullName()
+                               + ", who worked on " + maximumMovieCount + " movies in " + mostProductiveYear + ".");
+        else
+            System.out.println("Java 7 - most productive actor in a single year not found?!?");
 
         // Java 8 style.
         // todo: rewrite to improve performance, for example by having the movies as the "outer loop".
         // Disabled the code below for the moment.
+        System.out.println("Java 8 - most productive actor in a single year: to be optimized...");
         if (movies.size() == -1) {
             final Map.Entry<Actor, Map.Entry<Integer, Long>> actorYearCountEntry = actors.stream().parallel()
                 .collect(Collectors.toMap(
@@ -215,5 +190,28 @@ public class MovieQueries {
             System.out.println("Movie count: " + actorYearCountEntry.getValue().getValue());
             System.out.println();
         }
+    }
+
+    /**
+     * Read the movies list from the input file.
+     *
+     * @param filePath the input file path.
+     * @return the movies.
+     */
+    private List<Movie> readMoviesAndActors(final String filePath) {
+        System.out.println("Reading movies and actors from file " + filePath + "...");
+        final List<Movie> movies = new ArrayList<>();
+        try {
+            final BufferedReader dataReader = new BufferedReader(new FileReader(filePath));
+            String line;
+            while ((line = dataReader.readLine()) != null)
+                movies.add(new Movie(line));
+            dataReader.close();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Total number of movies: " + movies.size() + ".");
+
+        return movies;
     }
 }
