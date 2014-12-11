@@ -9,7 +9,7 @@ def moviesFile = new File(moviesFileLocation)
 if (!moviesFile.exists()) { moviesFile << new URL(moviesFileURL).text } // download file !exists
 
 def movies = moviesFile.readLines().collect {[ 
-						'year':(((it.split('\\(')[1]) =~ /([0-9]{4,4}+)/)[0][0]),
+						'year':(it.split('\\(')[1] =~ /([0-9]{4}+)/)[0][0],
 						'title':("${it.split('/')[0]}".split('\\(')[0]).trim().split(',').reverse().join(' ').trim(),
 						'actors': it.split('/')[1..-1].collect { it.split(',').reverse().join(" ").trim() }
 					]} 
@@ -29,7 +29,7 @@ movies.each { movie -> movie['actors'].each { actor -> (!actors[actor]) ? actors
 def mostActiveActor = actors.sort { it.value }.collect { it }.pop()
 println mostActiveActor.key + " with " + mostActiveActor.value + " movies."
 
-print "Most active actor by year: "
+println "Most active actor by year:"
 years.each { year ->
 	actors = [:] // reset actors
 	movies.findAll { it['year'] == year }.each { movie -> movie['actors'].each { actor -> (!actors[actor]) ? actors[actor] = 1 : actors[actor]++ } }
