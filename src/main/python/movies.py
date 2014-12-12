@@ -43,23 +43,61 @@ class DistinctYears(MovieSink):
     def report(self):
         print "Distinct years %d" % len(self.s)
 
+class MostBusyYear(MovieSink):
+    def __init__(self):
+        self.s = {}
+    def add(self, title, year, appendix, player):
+        if self.s.has_key(year):
+            self.s[year] += 1
+        else:
+            self.s[year] = 1
+    def report(self):
+        highest = 0
+        for k, v in self.s.items():
+            if v > highest:
+                busy = [k]
+                highest = v
+            elif v == highest:
+                busy.append(k)
+        print "Busiest year %s with %d movies" % (busy, highest)
+
 class ProlificActor(MovieSink):
     def __init__(self):
         self.s = {}
     def add(self, title, year, appendix, player):
         for p in player:
-            if p in self.s:
+            if self.s.has_key(p):
                 self.s[p] += 1
             else:
                 self.s[p] = 1
     def report(self):
-        maxn = 0
-        maxp = 0
-        for p in self.s.keys():
-            if self.s[p] > maxn:
-                maxn = self.s[p]
-                maxp = p
-        print "Most Prolific Actor %s" % maxp
+        highest = 0
+        for k,v in self.s.items():
+            if v > highest:
+                prol = [k]
+                highest = v
+            elif v == highest:
+                prol.append(k)
+        print "Most Prolific Actor %s with %d movies" % (prol, highest)
+
+class ProlificActorYear(MovieSink):
+    def __init__(self):
+        self.s = {}
+    def add(self, title, year, appendix, player):
+        for p in player:
+            if self.s.has_key((p,year)):
+                self.s[(p,year)] += 1
+            else:
+                self.s[(p,year)] = 1
+    def report(self):
+        highest = 0
+        for k,v in self.s.items():
+            if v > highest:
+                prol = [k]
+                highest = v
+            elif v == highest:
+                prol.append(k)
+        print "Most Prolific Actor in one year %s with %d movies" % (prol, highest)
 
 class Fork(MovieSink):
     def __init__(self):
@@ -83,7 +121,7 @@ class FileSource(object):
             assert year[-1]==')', year
             year = year[:4]
             appendix = year[5:]
-            player = players.split('/')
+            player = players.strip().split('/')
             self.sink.add(title, year, appendix, player)
 
 f = Fork()
@@ -92,6 +130,8 @@ f.newsink(DistinctTitles())
 f.newsink(ClintFinder())
 f.newsink(DistinctYears())
 f.newsink(ProlificActor())
+f.newsink(ProlificActorYear())
+f.newsink(MostBusyYear())
 
 FileSource(f).read('../../../data/movies-mpaa.txt')
 f.report()
