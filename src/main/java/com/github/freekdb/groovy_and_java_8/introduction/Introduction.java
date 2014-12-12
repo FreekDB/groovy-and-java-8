@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -21,13 +22,14 @@ public class Introduction {
     }
 
     /**
-     * Introduce streams with two examples: a simple string stream and a random number stream.
+     * Introduce streams with three examples: a simple string stream, a random number stream, and a stream of DNA.
      */
     private void introduceStreams() {
         final long start = start();
 
         simpleStringStream();
         randomNumberStream();
+        dnaStatisticsStream();
 
         end(start);
     }
@@ -67,6 +69,20 @@ public class Introduction {
         System.out.println("Many added numbers: " + manyAddedNumbers.getBigNumber());
         System.out.println("Runtime number pipeline: " + (durationPipeline / 1000.0) + " seconds.");
         System.out.println("======");
+    }
+
+    /**
+     * Stream of DNA that is analyzed for certain statistics.
+     */
+    private void dnaStatisticsStream() {
+        //noinspection SpellCheckingInspection
+        final IntSummaryStatistics summaryStatistics = "abcdefghij".chars().summaryStatistics();
+        System.out.println("summaryStatistics: " + summaryStatistics);
+
+        //noinspection SpellCheckingInspection
+        "ACGGTTTT".chars()
+            .collect(DnaStatistics::new, DnaStatistics::accept, DnaStatistics::combine)
+            .printStatistics();
     }
 
     private long start() {
