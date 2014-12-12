@@ -20,6 +20,7 @@ def years = movies.collect { it['year'] }.unique().sort()
 println "Number of movie titles found: " + movies.count { it['title'] }
 println "Number of unique movie titles found: " + movies.collect { it['title'] }.unique().size()
 println "Movies with actor 'Clint Eastwood': " + movies.findAll { it['actors'].contains('Clint Eastwood') }.collect { it['title'] }.join(', ')
+println "Number of movies by Clint! " + movies.findAll { it['actors'].contains('Clint Eastwood') }.size()
 println "Year(s) without movies: " + ((((years.min() as int)..(years.max() as int)).collect { it as String }) - years).join(', ')
 println "Number of movies by year: " + (years.collect { year -> ["${year}":(movies.count { it['year'] == year })] })
 
