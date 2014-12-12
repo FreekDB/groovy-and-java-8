@@ -59,6 +59,32 @@ public class Movies {
 
     }
 
+    private static class Pair<A, B> {
+        private A first;
+        private B second;
+
+        public Pair(A firstValue, B secondValue) {
+            first = firstValue;
+            second = secondValue;
+        }
+
+        public A getFirst() {
+            return first;
+        }
+
+        public void setFirst(A first) {
+            this.first = first;
+        }
+
+        public B getSecond() {
+            return second;
+        }
+
+        public void setSecond(B second) {
+            this.second = second;
+        }
+    }
+
     private abstract class AbstractMovieDBConsumer implements Consumer<String> {
         abstract String report();
 
@@ -98,7 +124,7 @@ public class Movies {
         @Override
         public void accept(String t) {
             int start = t.indexOf('/');
-            List<String> asList = Arrays.asList(t.substring(start).split("/"));
+            List<String> asList = Arrays.asList(t.substring(start + 1).split("/"));
             String movie = getTitle(t);
             asList.stream().forEach(A -> {
                 actors.merge(A, getMovieList(movie),
@@ -115,10 +141,25 @@ public class Movies {
         public List<String> getMoviesForActor(final String actor) {
             return actors.get(actor);
         }
+
+        public Pair<String,Integer> getActorWithMostMovies() {
+            Pair<String,Integer> pair = new Pair<>("", 0);
+            actors.forEach((actor, movies) -> {
+                if (movies.size() > pair.getSecond()) {
+                    pair.setFirst(actor);
+                    pair.setSecond(movies.size());
+                }
+                });
+            return pair;
+        }
+
         @Override
         public String report() {
             StringBuilder report = new StringBuilder();
-            report.append(String.format("There are %d unique actors in the database", actors.size()));
+            report.append(String.format("There are %d unique actors in the database.\n", actors.size()));
+            Pair<String, Integer> pair = getActorWithMostMovies();
+            report.append(String.format("The actor with most movies is %s with %d movies.\n",
+                    pair.getFirst(), pair.getSecond()));
             return report.toString();
         }
 
