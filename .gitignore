@@ -2,3 +2,4 @@
 .idea/
 data/movies-mpaa.txt
 groovy-and-java-8.iml
+/david/target/
