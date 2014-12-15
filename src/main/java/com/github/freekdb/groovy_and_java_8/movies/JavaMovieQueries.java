@@ -39,14 +39,14 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:freekdb@gmail.com">Freek de Bruijn</a>
  */
-public class MovieQueries {
+public class JavaMovieQueries {
     /**
      * Main method.
      *
      * @param arguments unused command-line arguments.
      */
     public static void main(final String[] arguments) {
-        new MovieQueries().runQueries();
+        new JavaMovieQueries().runQueries();
     }
 
     /**
